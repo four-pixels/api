@@ -34,6 +34,7 @@ class SlackController extends FOSRestController {
   public function getSlackAction(Request $request, ParamFetcherInterface $paramFetcher) {
     return ['message' => 'hello'];
   }
+
   /**
    * Do something.
    *
@@ -53,6 +54,7 @@ class SlackController extends FOSRestController {
   public function getSlackInstructionsAction(Request $request, ParamFetcherInterface $paramFetcher) {
     return ['message' => 'testing the api - not much yet, may the force be with you.'];
   }
+
   /**
    * Do something.
    *
@@ -72,6 +74,7 @@ class SlackController extends FOSRestController {
   public function getSlackSupportAction(Request $request, ParamFetcherInterface $paramFetcher) {
     return ['message' => 'some support stuff required, may the force be with you.'];
   }
+
   /**
    * Do something.
    *
@@ -90,6 +93,28 @@ class SlackController extends FOSRestController {
    */
   public function getSlackCallbackAction(Request $request, ParamFetcherInterface $paramFetcher) {
     return ['message' => 'some callback function here, may the force be with you.'];
+  }
+
+  /* --- TREE HOUSE STUFF --------------------------------------------------- */
+
+  /**
+   * Do something.
+   *
+   * @ApiDoc(
+   *   statusCodes = {
+   *     200 = "Returned when successful"
+   *   }
+   * )
+   *
+   * @Annotations\View()
+   *
+   * @param Request               $request      the request object
+   * @param ParamFetcherInterface $paramFetcher param fetcher service
+   *
+   * @return array
+   */
+  public function getSlackTeamtreehouseAction(Request $request, ParamFetcherInterface $paramFetcher) {
+    return ['message' => 'Let the Team Tree House tournament begin, may the force be with you.'];
   }
 
 }
