@@ -1,0 +1,3 @@
+four_pixels_slack:
+    resource: "@FourPixelsBundle/Controller/SlackController.php"
+    type:     rest
