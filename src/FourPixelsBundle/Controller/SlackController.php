@@ -114,7 +114,7 @@ class SlackController extends FOSRestController {
    * @return array
    */
   public function getSlackTeamtreehouseAction(Request $request, ParamFetcherInterface $paramFetcher) {
-    return ['message' => 'Let the Team Tree House tournament begin, may the force be with you.'];
+    return ['text' => 'Let the Team Tree House tournament begin, may the force be with you.'];
   }
 
 }
