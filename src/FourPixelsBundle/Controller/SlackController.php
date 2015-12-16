@@ -153,7 +153,7 @@ class SlackController extends FOSRestController {
   public function postSlackTeamtreehouseAction(Request $request, ParamFetcherInterface $paramFetcher) {
     return [
         'username' => 'pixels bot',
-        'text' => 'Let the Team Tree House tournament begin, may the force be with you.',
+        'text' => 'Let the Team Tree House tournament begin, may the force be with you. :panda_face:',
         "channel" => "#testing-api",
         "icon_url" => "https://slack.com/img/icons/app-57.png",
         "icon_emoji" => ":ghost:"
