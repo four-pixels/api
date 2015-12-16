@@ -142,7 +142,7 @@ class SlackController extends FOSRestController {
    *     200 = "Returned when successful"
    *   }
    * )
-   *
+   * @Annotations\Post("/slack/teamtreehouse")
    * @Annotations\View()
    *
    * @param Request               $request      the request object
