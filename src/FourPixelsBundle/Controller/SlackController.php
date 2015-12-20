@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Guzzle\Http\Exception\ClientErrorResponseException;
+use JMS\Serializer\SerializerBuilder;
 
 class SlackController extends FOSRestController {
 
@@ -95,23 +96,6 @@ class SlackController extends FOSRestController {
   public function getSlackCallbackAction(Request $request, ParamFetcherInterface $paramFetcher) {
 
 
-//    {
-//    "ok":true,
-//    "access_token":"xoxp-10774936049-11047021873-16972576145-eef0101933",
-//    "scope":"identify,incoming-webhook,commands,chat:write:user,bot",
-//    "team_name":"4Pixels",
-//    "team_id":"T0ANSTJ1F",
-//    "incoming_webhook": {
-//      "channel":"testing-api",
-//      "configuration_url":"https:\/\/conexx-media.slack.com\/services\/B0GUM5QF8",
-//      "url":"https:\/\/hooks.slack.com\/services\/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"
-//
-//      },
-//      "bot": {
-//        "bot_user_id":"U0GUGV4Q5",
-//        "bot_access_token":"xoxb-16968990821-N1VT65cY5QyyNZt9szEjAPbk"
-//      }
-//    } 
 //GET /api/slack/callback?code=10774936049.16968959669.95e76d0d0a&state=X+bEw HTTP/1.1 
 //        Accept:                    text/html,application/xhtml+xml,application/xml; q=0.9,image/webp,*/*;q=0.8 
 //Accept-Encoding:           gzip, deflate, sdch 
@@ -123,18 +107,16 @@ class SlackController extends FOSRestController {
 //Upgrade-Insecure-Requests: 1 
 //User-Agent:                Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36 X-Php-Ob-Level:  
 
-    $request->
-            /* @var $client \Guzzle\Http\Client */
-            /* @var $requestForSlack \Guzzle\Http\Message\Request */
-            $logger = $this->get('logger');
+    /* @var $client \Guzzle\Http\Client */
+    /* @var $requestForSlack \Guzzle\Http\Message\Request */
+    $em = $this->getDoctrine()->getManager();
+    $logger = $this->get('logger');
 
     $logger->info("----------------------------------------------");
     $logger->info("------------getSlackCallbackAction------------");
     $logger->info("----------------------------------------------");
     $slackCode = $request->get('code');
     $slackState = $request->get('state');
-    $logger->info("CODE -> " . $slackCode);
-    $logger->info("STATE -> " . $slackState);
     // Create a client and provide a base URL
     $client = new \Guzzle\Http\Client('https://slack.com');
     $client->setDefaultOption('query', [
@@ -144,12 +126,16 @@ class SlackController extends FOSRestController {
     ]);
     $requestForSlack = $client->get('/api/oauth.access');
     $response = $requestForSlack->send();
-    $b = $response->getBody();
-    $logger->info($b);
-    $logger->info("----------------------------------------------");
-    $logger->info("*************************************************");
-    $logger->info("----------------------------------------------");
-    return ['text' => 'some callback function here, may the force be with you.'];
+    $slackJson = $response->getBody();
+    $logger->info($slackJson);
+    $encoders = array(new \Symfony\Component\Serializer\Encoder\JsonEncoder());
+    $normalizers = array(new \Symfony\Component\Serializer\Normalizer\ObjectNormalizer());
+    $serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);
+    $slack = $serializer->deserialize($slackJson, 'FourPixelsBundle\Entity\Slack', 'json');
+    $slack->setContent($slackJson);
+    $em->persist($slack);
+    $em->flush();
+    return $this->redirect('https://4pixels.co', Response::HTTP_FOUND);
   }
 
   /* --- TREE HOUSE STUFF --------------------------------------------------- */

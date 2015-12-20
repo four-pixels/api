@@ -1,8 +1,32 @@
 {
-    "name": "gimler/symfony-rest-edition",
+    "name": "four-pixels/api",
     "license": "MIT",
     "type": "project",
-    "description": "The \"Symfony REST Edition\" distribution",
+    "description": "4pixels API",
+    "keywords": [
+        "api",
+        "slack",
+        "Team tree house",
+        "4pixels",
+        "fourpixels",
+        "four pixels",
+        "4 pixels"
+    ],
+    "homepage": "http://4pixels.co/",
+    "authors": [
+        {
+            "name": "Erick Hernandez",
+            "email": "erick.hz@4pixels.co"
+        },
+        {
+            "name": "Jason Cameron",
+            "email": "jcameron@4pixels.co"
+        },
+        {
+            "name": "Rene Ramirez",
+            "email": "rene.ramirez@4pixels.co"
+        }
+    ],
     "autoload": {
         "psr-4": { "": "src/" }
     },
@@ -23,7 +47,8 @@
         "friendsofsymfony/http-cache-bundle": "^1.0",
         "willdurand/hateoas-bundle": "^1.0",
         "hautelook/templated-uri-bundle": "^2.0",
-        "willdurand/rest-extra-bundle": "^1.0"
+        "willdurand/rest-extra-bundle": "^1.0",
+        "stof/doctrine-extensions-bundle": "^1.2"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

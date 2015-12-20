@@ -13,3 +13,7 @@ parameters:
 
     locale:            en
     secret:            ThisTokenIsNotSoSecretChangeIt
+    
+    slack.client_id: ~
+    slack.client_secret: ~
+    slack.command.tream_tree_house: ~
