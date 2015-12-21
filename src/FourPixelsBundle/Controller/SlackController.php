@@ -381,7 +381,6 @@ class SlackController extends FOSRestController {
                 ]
             ];
           } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
-            $logger->info("HEY");
             $this->getDoctrine()->resetManager();
             $slack = $this->getDoctrine()->getRepository('FourPixelsBundle:Slack')->findOneBy(['team_id' => $request->get('team_id')]);
             $em = $this->getDoctrine()->getManager();
@@ -400,19 +399,56 @@ class SlackController extends FOSRestController {
 
           break;
         case 'remove':
-          $myArray = [
-              "response_type" => $globalShowMode, // OR in_channel
-              'text' => ":panda_face: Panda is thinking in " . $randomWord->getBody(),
-              "attachments" => [
-                  [
-                      "fallback" => "please visit https://4pixels.co/api-help/remove",
-                      "title" => "Feature REMOVE",
-                      "text" => "The panda is busy right know thinking in other stuff. He will develop this feature soon.",
-                      "mrkdwn_in" => ['text'],
-                      "color" => "#D40E52",
-                  ],
-              ]
-          ];
+          $username = $explode[1];
+          $slackTeamTreeHouse = $this->getDoctrine()->getRepository('FourPixelsBundle:SlackTeamTreeHouse')->findOneBy(['slack' => $slack->getId(), 'profile_name' => $username]);
+          if (!is_null($slackTeamTreeHouse)) {
+            try {
+              $name = $slackTeamTreeHouse->getName();
+              $gravatarUrl = $slackTeamTreeHouse->getGravatarUrl();
+              $em->remove($slackTeamTreeHouse);
+              $em->flush();
+              $em->clear();
+              $slack = $this->getDoctrine()->getRepository('FourPixelsBundle:Slack')->findOneBy(['team_id' => $request->get('team_id')]);
+              $em = $this->getDoctrine()->getManager();
+              $myArray = [
+                  "response_type" => $globalShowMode, // OR in_channel
+                  "attachments" => [
+                      [
+                          "fallback" => "please visit https://4pixels.co/api-help/remove",
+                          "title" => "REMOVE " . $name . " (" . $username . ")",
+                          "text" => "User has been removed from the list successfuly",
+                          "color" => "#75A3D1",
+                          "thumb_url" => $gravatarUrl,
+                      ],
+                  ]
+              ];
+            } catch (\Exception $e) {
+              $logger->info("HEY HEY");
+              $myArray = [
+                  "response_type" => $globalShowMode, // OR in_channel
+                  "attachments" => [
+                      [
+                          "fallback" => "please visit https://4pixels.co/api-help/remove",
+                          "title" => "REMOVE " . $username . " - Ups !!! :panda_face: Panda Warning ",
+                          "text" => "The was a problem removing the user from the list. ",
+                          "color" => "#FF9900",
+                      ],
+                  ]
+              ];
+            }
+          } else {
+            $myArray = [
+                "response_type" => $globalShowMode, // OR in_channel
+                "attachments" => [
+                    [
+                        "fallback" => "please visit https://4pixels.co/api-help/remove",
+                        "title" => "REMOVE " . $username . " - Ups !!! :panda_face: Panda Trouble ",
+                        "text" => "Username was not found on the list. \n You can view the list with: /teamtreehouse list",
+                        "color" => "#D40E52",
+                    ],
+                ]
+            ];
+          }
           break;
         default :
           $myArray = [
