@@ -1,0 +1,426 @@
+<?php
+
+namespace FourPixelsBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
+/**
+ * {  
+ *  "name":"Jason Cameron",
+ *  "profile_name":"jasoncameron",
+ *  "profile_url":"https://teamtreehouse.com/jasoncameron",
+ *  "gravatar_url":"https://secure.gravatar.com/avatar/13366514d87acd424601bac475b3010b?s=400\u0026d=https%3A%2F%2Fstatic.teamtreehouse.com%2Fassets%2Fcontent%2Fdefault_avatar-1194852ae95df3501aed27c0a96da653.png\u0026r=pg",
+ *  "gravatar_hash":"13366514d87acd424601bac475b3010b",
+ *  "badges":[  
+ *     {  
+ *        "id":912,
+ *        "name":"Beginning HTML and CSS",
+ *        "url":"https://teamtreehouse.com/library/how-to-make-a-website/beginning-html-and-css",
+ *        "icon_url":"https://achievement-images.teamtreehouse.com/badges_html_howtomakeawebsite_stage01.png",
+ *        "earned_date":"2014-09-03T19:28:53.000Z",
+ *        "courses":[  
+ *           {  
+ *              "title":"How to Make a Website",
+ *              "url":"https://teamtreehouse.com/library/how-to-make-a-website",
+ *              "badge_count":1
+ *          },
+ *           {  
+ *              "title":"Beginning HTML and CSS",
+ *              "url":"https://teamtreehouse.com/library/how-to-make-a-website/beginning-html-and-css",
+ *              "badge_count":1
+ *           }
+ *        ]
+ *     },
+ *     {  
+ *        "id":2152,
+ *        "name":"JavaScript Functions",
+ *        "url":"https://teamtreehouse.com/library/javascript-basics/creating-reusable-code-with-functions",
+ *        "icon_url":"https://achievement-images.teamtreehouse.com/badges_JavaScript_Basics_Stage4B.png",
+ *       "earned_date":"2015-02-19T23:24:53.000Z",
+ *        "courses":[  
+ *           {  
+ *              "title":"JavaScript Basics",
+ *              "url":"https://teamtreehouse.com/library/javascript-basics",
+ *              "badge_count":1
+ *           },
+ *           {  
+ *              "title":"Creating Reusable Code with Functions",
+ *              "url":"https://teamtreehouse.com/library/javascript-basics/creating-reusable-code-with-functions",
+ *              "badge_count":1
+ *           }
+ *        ]
+ *     },
+ *  ],
+ *  "points":{  
+ *     "total":1794,
+ *     "HTML":144,
+ *     "CSS":63,
+ *     "Design":0,
+ *     "JavaScript":1420,
+ *     "Ruby":1,
+ *     "PHP":52,
+ *     "WordPress":0,
+ *     "iOS":72,
+ *     "Android":0,
+ *     "Development Tools":9,
+ *     "Business":0,
+ *     "Python":0,
+ *     "Java":0,
+ *     "Digital Literacy":0,
+ *     "Game Development":0,
+ *     "C#":0,
+ *     "Databases":0
+ *  }
+ * }
+ */
+
+/**
+ * SlackTeamTreeHouse
+ *
+ * @ORM\Table(name="slack_team_tree_house")
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
+ */
+class SlackTeamTreeHouse {
+
+  /**
+   * @ORM\Column(name="id", type="integer")
+   * @ORM\Id()
+   * @ORM\GeneratedValue(strategy="AUTO")
+   */
+  private $id;
+
+  /**
+   * @ORM\Column(name="total" , type="integer", nullable=false)
+   */
+  protected $total;
+
+  /**
+   * @ORM\Column(name="name" , type="string", length=64 , nullable=false)
+   */
+  protected $name;
+
+  /**
+   * @ORM\Column(name="profile_name" , type="string", length=64 , nullable=false, unique=true)
+   */
+  protected $profile_name;
+
+  /**
+   * @ORM\Column(name="profile_url" , type="text" , nullable=false)
+   */
+  protected $profile_url;
+
+  /**
+   * @ORM\Column(name="gravatar_url" , type="text" , nullable=false)
+   */
+  protected $gravatar_url;
+
+  /**
+   * @ORM\Column(name="gravatar_hash" , type="string", length=64 , nullable=false)
+   */
+  protected $gravatar_hash;
+
+  /**
+   * @ORM\Column(name="badges", type="text", nullable=false)
+   */
+  protected $badges;
+
+  /**
+   * @ORM\Column(name="points", type="text", nullable=false)
+   */
+  protected $points;
+
+  /**
+   * @ORM\Column(name="content", type="text", nullable=false)
+   */
+  protected $content;
+
+  /**
+   * @ORM\ManyToOne(targetEntity="Slack", inversedBy="slack_team_tree_house_list")
+   * @ORM\JoinColumn(name="slack_id", referencedColumnName="id")
+   */
+  private $slack;
+
+  /**
+   * @var \DateTime
+   *
+   * @ORM\Column(name="created_at", type="datetime", nullable=false)
+   * @Gedmo\Timestampable(on="create")
+   */
+  protected $createdAt;
+
+  /**
+   * @var \DateTime
+   *
+   * @ORM\Column(name="updated_at", type="datetime", nullable=true)
+   * @Gedmo\Timestampable(on="update")
+   */
+  protected $updatedAt;
+
+  /**
+   * Constructor
+   */
+  public function __construct() {
+    $this->total = 0;
+  }
+
+  /**
+   * Get id
+   *
+   * @return integer
+   */
+  public function getId() {
+    return $this->id;
+  }
+
+  /**
+   * Set name
+   *
+   * @param string $name
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setName($name) {
+    $this->name = $name;
+
+    return $this;
+  }
+
+  /**
+   * Get name
+   *
+   * @return string
+   */
+  public function getName() {
+    return $this->name;
+  }
+
+  /**
+   * Set profileName
+   *
+   * @param string $profileName
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setProfileName($profileName) {
+    $this->profile_name = $profileName;
+
+    return $this;
+  }
+
+  /**
+   * Get profileName
+   *
+   * @return string
+   */
+  public function getProfileName() {
+    return $this->profile_name;
+  }
+
+  /**
+   * Set profileUrl
+   *
+   * @param string $profileUrl
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setProfileUrl($profileUrl) {
+    $this->profile_url = $profileUrl;
+
+    return $this;
+  }
+
+  /**
+   * Get profileUrl
+   *
+   * @return string
+   */
+  public function getProfileUrl() {
+    return $this->profile_url;
+  }
+
+  /**
+   * Set gravatarUrl
+   *
+   * @param string $gravatarUrl
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setGravatarUrl($gravatarUrl) {
+    $this->gravatar_url = $gravatarUrl;
+
+    return $this;
+  }
+
+  /**
+   * Get gravatarUrl
+   *
+   * @return string
+   */
+  public function getGravatarUrl() {
+    return $this->gravatar_url;
+  }
+
+  /**
+   * Set gravatarHash
+   *
+   * @param string $gravatarHash
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setGravatarHash($gravatarHash) {
+    $this->gravatar_hash = $gravatarHash;
+
+    return $this;
+  }
+
+  /**
+   * Get gravatarHash
+   *
+   * @return string
+   */
+  public function getGravatarHash() {
+    return $this->gravatar_hash;
+  }
+
+  /**
+   * Set badges
+   *
+   * @param string $badges
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setBadges($badges) {
+    $this->badges = $badges;
+
+    return $this;
+  }
+
+  /**
+   * Get badges
+   *
+   * @return string
+   */
+  public function getBadges() {
+    return $this->badges;
+  }
+
+  /**
+   * Set points
+   *
+   * @param string $points
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setPoints($points) {
+    $eval = $points;
+    if (is_array($eval)) {
+      $points = json_encode($points);
+    } else {
+      $eval = json_decode($points, true);
+    }
+
+    $this->points = $points;
+
+    return $this;
+  }
+
+  /**
+   * Get points
+   *
+   * @return string
+   */
+  public function getPoints() {
+    return $this->points;
+  }
+
+  /**
+   * Set createdAt
+   *
+   * @param \DateTime $createdAt
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setCreatedAt($createdAt) {
+    $this->createdAt = $createdAt;
+
+    return $this;
+  }
+
+  /**
+   * Get createdAt
+   *
+   * @return \DateTime
+   */
+  public function getCreatedAt() {
+    return $this->createdAt;
+  }
+
+  /**
+   * Set updatedAt
+   *
+   * @param \DateTime $updatedAt
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setUpdatedAt($updatedAt) {
+    $this->updatedAt = $updatedAt;
+
+    return $this;
+  }
+
+  /**
+   * Get updatedAt
+   *
+   * @return \DateTime
+   */
+  public function getUpdatedAt() {
+    return $this->updatedAt;
+  }
+
+  /**
+   * Set slack
+   *
+   * @param \FourPixelsBundle\Entity\Slack $slack
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setSlack(\FourPixelsBundle\Entity\Slack $slack = null) {
+    $this->slack = $slack;
+
+    return $this;
+  }
+
+  /**
+   * Get slack
+   *
+   * @return \FourPixelsBundle\Entity\Slack
+   */
+  public function getSlack() {
+    return $this->slack;
+  }
+
+  /**
+   * Set total
+   *
+   * @param integer $total
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setTotal($total) {
+    $this->total = $total;
+
+    return $this;
+  }
+
+  /**
+   * Get total
+   *
+   * @return integer
+   */
+  public function getTotal() {
+    return $this->total;
+  }
+
+}

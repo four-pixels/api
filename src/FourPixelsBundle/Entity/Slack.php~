@@ -4,9 +4,10 @@ namespace FourPixelsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Phone
+ * Slack
  *
  * @ORM\Table(name="slack")
  * @ORM\Entity
@@ -53,7 +54,7 @@ class Slack {
   protected $team_name;
 
   /**
-   * @ORM\Column(name="team_id" , type="string", length=64 , nullable=false)
+   * @ORM\Column(name="team_id" , type="string", length=64 , nullable=false, unique=true)
    */
   protected $team_id;
 
@@ -88,6 +89,16 @@ class Slack {
   protected $content;
 
   /**
+   * @ORM\OneToMany(targetEntity="SlackRequest", mappedBy="slack")
+   */
+  private $slack_requests;
+
+  /**
+   * @ORM\OneToMany(targetEntity="SlackTeamTreeHouse", mappedBy="slack")
+   */
+  private $slack_team_tree_house_list;
+
+  /**
    * @var \DateTime
    *
    * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -99,7 +110,7 @@ class Slack {
    * @var \DateTime
    *
    * @ORM\Column(name="updated_at", type="datetime", nullable=true)
-   * @Gedmo\Timestampable
+   * @Gedmo\Timestampable(on="update")
    */
   protected $updatedAt;
 
@@ -107,7 +118,8 @@ class Slack {
    * Constructor
    */
   public function __construct() {
-    
+    $this->slack_requests = new ArrayCollection();
+    $this->slack_team_tree_house_list = new ArrayCollection();
   }
 
   /**
@@ -273,4 +285,192 @@ class Slack {
     return $this->updatedAt;
   }
 
+  /**
+   * Set incomingWebhookChannel
+   *
+   * @param string $incomingWebhookChannel
+   *
+   * @return Slack
+   */
+  public function setIncomingWebhookChannel($incomingWebhookChannel) {
+    $this->incoming_webhook_channel = $incomingWebhookChannel;
+
+    return $this;
+  }
+
+  /**
+   * Get incomingWebhookChannel
+   *
+   * @return string
+   */
+  public function getIncomingWebhookChannel() {
+    return $this->incoming_webhook_channel;
+  }
+
+  /**
+   * Set incomingWebhookConfigurationUrl
+   *
+   * @param string $incomingWebhookConfigurationUrl
+   *
+   * @return Slack
+   */
+  public function setIncomingWebhookConfigurationUrl($incomingWebhookConfigurationUrl) {
+    $this->incoming_webhook_configuration_url = $incomingWebhookConfigurationUrl;
+
+    return $this;
+  }
+
+  /**
+   * Get incomingWebhookConfigurationUrl
+   *
+   * @return string
+   */
+  public function getIncomingWebhookConfigurationUrl() {
+    return $this->incoming_webhook_configuration_url;
+  }
+
+  /**
+   * Set incomingWebhookUrl
+   *
+   * @param string $incomingWebhookUrl
+   *
+   * @return Slack
+   */
+  public function setIncomingWebhookUrl($incomingWebhookUrl) {
+    $this->incoming_webhook_url = $incomingWebhookUrl;
+
+    return $this;
+  }
+
+  /**
+   * Get incomingWebhookUrl
+   *
+   * @return string
+   */
+  public function getIncomingWebhookUrl() {
+    return $this->incoming_webhook_url;
+  }
+
+  /**
+   * Set botUserId
+   *
+   * @param string $botUserId
+   *
+   * @return Slack
+   */
+  public function setBotUserId($botUserId) {
+    $this->bot_user_id = $botUserId;
+
+    return $this;
+  }
+
+  /**
+   * Get botUserId
+   *
+   * @return string
+   */
+  public function getBotUserId() {
+    return $this->bot_user_id;
+  }
+
+  /**
+   * Set botAccessToken
+   *
+   * @param string $botAccessToken
+   *
+   * @return Slack
+   */
+  public function setBotAccessToken($botAccessToken) {
+    $this->bot_access_token = $botAccessToken;
+
+    return $this;
+  }
+
+  /**
+   * Get botAccessToken
+   *
+   * @return string
+   */
+  public function getBotAccessToken() {
+    return $this->bot_access_token;
+  }
+
+  public function setIncomingWebhook($incomingWebhook) {
+    $this->incoming_webhook_channel = $incomingWebhook["channel"];
+    $this->incoming_webhook_configuration_url = $incomingWebhook["configuration_url"];
+    $this->incoming_webhook_url = $incomingWebhook["url"];
+    return $this;
+  }
+
+  public function setBot($bot) {
+    $this->bot_access_token = $bot["bot_access_token"];
+    $this->bot_user_id = $bot["bot_user_id"];
+    return $this;
+  }
+
+  /**
+   * Add slackRequest
+   *
+   * @param \FourPixelsBundle\Entity\SlackRequest $slackRequest
+   *
+   * @return Slack
+   */
+  public function addSlackRequest(\FourPixelsBundle\Entity\SlackRequest $slackRequest) {
+    $this->slack_requests[] = $slackRequest;
+
+    return $this;
+  }
+
+  /**
+   * Remove slackRequest
+   *
+   * @param \FourPixelsBundle\Entity\SlackRequest $slackRequest
+   */
+  public function removeSlackRequest(\FourPixelsBundle\Entity\SlackRequest $slackRequest) {
+    $this->slack_requests->removeElement($slackRequest);
+  }
+
+  /**
+   * Get slackRequests
+   *
+   * @return \Doctrine\Common\Collections\Collection
+   */
+  public function getSlackRequests() {
+    return $this->slack_requests;
+  }
+
+
+    /**
+     * Add slackTeamTreeHouseList
+     *
+     * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+     *
+     * @return Slack
+     */
+    public function addSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList)
+    {
+        $this->slack_team_tree_house_list[] = $slackTeamTreeHouseList;
+
+        return $this;
+    }
+
+    /**
+     * Remove slackTeamTreeHouseList
+     *
+     * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+     */
+    public function removeSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList)
+    {
+        $this->slack_team_tree_house_list->removeElement($slackTeamTreeHouseList);
+    }
+
+    /**
+     * Get slackTeamTreeHouseList
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSlackTeamTreeHouseList()
+    {
+        return $this->slack_team_tree_house_list;
+    }
 }

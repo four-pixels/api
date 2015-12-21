@@ -4,9 +4,10 @@ namespace FourPixelsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * Phone
+ * Slack
  *
  * @ORM\Table(name="slack")
  * @ORM\Entity
@@ -53,7 +54,7 @@ class Slack {
   protected $team_name;
 
   /**
-   * @ORM\Column(name="team_id" , type="string", length=64 , nullable=false)
+   * @ORM\Column(name="team_id" , type="string", length=64 , nullable=false, unique=true)
    */
   protected $team_id;
 
@@ -88,6 +89,18 @@ class Slack {
   protected $content;
 
   /**
+   * @ORM\OneToMany(targetEntity="SlackRequest", mappedBy="slack")
+   * @ORM\OrderBy({"created_at" = "ASC"})
+   */
+  private $slack_requests;
+
+  /**
+   * @ORM\OneToMany(targetEntity="SlackTeamTreeHouse", mappedBy="slack")
+   * @ORM\OrderBy({"name" = "ASC"})
+   */
+  private $slack_team_tree_house_list;
+
+  /**
    * @var \DateTime
    *
    * @ORM\Column(name="created_at", type="datetime", nullable=false)
@@ -107,7 +120,12 @@ class Slack {
    * Constructor
    */
   public function __construct() {
-    
+    $this->slack_requests = new ArrayCollection();
+    $this->slack_team_tree_house_list = new ArrayCollection();
+  }
+
+  public function __toString() {
+    return $this->getTeamName();
   }
 
   /**
@@ -394,6 +412,68 @@ class Slack {
     $this->bot_access_token = $bot["bot_access_token"];
     $this->bot_user_id = $bot["bot_user_id"];
     return $this;
+  }
+
+  /**
+   * Add slackRequest
+   *
+   * @param \FourPixelsBundle\Entity\SlackRequest $slackRequest
+   *
+   * @return Slack
+   */
+  public function addSlackRequest(\FourPixelsBundle\Entity\SlackRequest $slackRequest) {
+    $this->slack_requests[] = $slackRequest;
+
+    return $this;
+  }
+
+  /**
+   * Remove slackRequest
+   *
+   * @param \FourPixelsBundle\Entity\SlackRequest $slackRequest
+   */
+  public function removeSlackRequest(\FourPixelsBundle\Entity\SlackRequest $slackRequest) {
+    $this->slack_requests->removeElement($slackRequest);
+  }
+
+  /**
+   * Get slackRequests
+   *
+   * @return \Doctrine\Common\Collections\Collection
+   */
+  public function getSlackRequests() {
+    return $this->slack_requests;
+  }
+
+  /**
+   * Add slackTeamTreeHouseList
+   *
+   * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+   *
+   * @return Slack
+   */
+  public function addSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList) {
+    $this->slack_team_tree_house_list[] = $slackTeamTreeHouseList;
+
+    return $this;
+  }
+
+  /**
+   * Remove slackTeamTreeHouseList
+   *
+   * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+   */
+  public function removeSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList) {
+    $this->slack_team_tree_house_list->removeElement($slackTeamTreeHouseList);
+  }
+
+  /**
+   * Get slackTeamTreeHouseList
+   *
+   * @return \Doctrine\Common\Collections\Collection
+   */
+  public function getSlackTeamTreeHouseList() {
+    return $this->slack_team_tree_house_list;
   }
 
 }
