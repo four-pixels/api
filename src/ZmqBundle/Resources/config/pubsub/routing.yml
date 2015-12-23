@@ -7,5 +7,4 @@ fourpixels_slack:
       pattern: "\d+"
     slackRequest:
       pattern: "\d+"
-      
   
