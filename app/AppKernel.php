@@ -25,6 +25,9 @@ class AppKernel extends Kernel
             new Bazinga\Bundle\RestExtraBundle\BazingaRestExtraBundle(),
             new FourPixelsBundle\FourPixelsBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
+            new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
+            new ZmqBundle\ZmqBundle(),
         ); 
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

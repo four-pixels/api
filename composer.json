@@ -48,7 +48,9 @@
         "willdurand/hateoas-bundle": "^1.0",
         "hautelook/templated-uri-bundle": "^2.0",
         "willdurand/rest-extra-bundle": "^1.0",
-        "stof/doctrine-extensions-bundle": "^1.2"
+        "stof/doctrine-extensions-bundle": "^1.2",
+        "gos/web-socket-bundle": "^1.6",
+        "react/zmq": "^0.3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"

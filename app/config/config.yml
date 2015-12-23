@@ -114,3 +114,18 @@ stof_doctrine_extensions:
             timestampable: true
             sluggable: true
             uploadable: true   
+            
+gos_web_socket:
+    server:
+        port: 1233        #The port the socket server will listen on
+        host: 127.0.0.1   #The host ip to bind to
+        router:
+            resources:
+                - @ZmqBundle/Resources/config/pubsub/routing.yml
+    pushers:
+        zmq:
+            default: true
+            host: 127.0.0.1
+            port: 5557
+            persistent: true
+            protocol: tcp

@@ -1,0 +1,3 @@
+zmq_homepage:
+    path:     /
+    defaults: { _controller: ZmqBundle:Default:index }

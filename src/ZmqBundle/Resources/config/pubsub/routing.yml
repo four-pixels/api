@@ -1,0 +1,11 @@
+fourpixels_slack:
+  channel: fourpixels/slack/{slack}/slackRequest/{slackRequest}
+  handler:
+    callback: "fourpixels.slack"
+  requirements:
+    slack:
+      pattern: "\d+"
+    slackRequest:
+      pattern: "\d+"
+      
+  

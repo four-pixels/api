@@ -1,0 +1,12 @@
+#services:
+#    zmq.example:
+#        class: ZmqBundle\Example
+#        arguments: [@service_id, "plain_value", %parameter%]
+services:
+    fourpixels.slack_topic_service:
+        class: ZmqBundle\Topic\FourPixelsSlackTopic
+        arguments:
+            logger: '@logger'
+            entityManager: "@doctrine.orm.entity_manager"
+        tags:
+            - { name: gos_web_socket.topic }

@@ -221,7 +221,9 @@ class SlackController extends FOSRestController {
       $slackRequest->setCommand($request->get('command'));
       $slackRequest->setText($request->get('text'));
       $slackRequest->setResponseUrl($request->get('response_url'));
-
+      $slackRequest->setSlack($slack);
+      $em->persist($slackRequest);
+      $em->flush();
       $client = new \Guzzle\Http\Client();
       $randomWord = $client->get('http://randomword.setgetgo.com/get.php')->send();
 
@@ -423,7 +425,6 @@ class SlackController extends FOSRestController {
                   ]
               ];
             } catch (\Exception $e) {
-              $logger->info("HEY HEY");
               $myArray = [
                   "response_type" => $globalShowMode, // OR in_channel
                   "attachments" => [
@@ -453,31 +454,29 @@ class SlackController extends FOSRestController {
         default :
           $myArray = [
               "response_type" => $globalShowMode, // OR in_channel
-              'text' => ":panda_face: Panda is thinking in " . $randomWord->getBody(),
               "attachments" => [
                   [
                       "fallback" => "please visit https://4pixels.co/api-help",
-                      "title" => "Feature GLOBAL RANKING",
-                      "text" => "The panda is busy right know thinking in other stuff. He will develop this feature soon.",
+                      "title" => "BUILDING RANKING - This can take some time",
+                      "text" => "The panda is busy right know building your ranking table. Please wait.",
                       "mrkdwn_in" => ['text'],
-                      "color" => "#D40E52",
+                      "color" => "#FF9900",
                   ],
               ]
           ];
+          /* @var $pusher \Gos\Bundle\WebSocketBundle\Pusher\Zmq\ZmqPusher */
+          $pusher = $this->get('gos_web_socket.zmq.pusher');
+          $pusher->push([], 'fourpixels_slack', ['slack' => $slack->getId(), 'slackRequest' => $slackRequest->getId()]);
           break;
       }
 
 
-      if ($pass === true) { //ITS ALWAYS TRUE BUT SOME LOGIC CAN BE DONE IF WE DO NOT WANT TO PERSIST
-        $slackRequest->setSlack($slack);
-        $em->persist($slackRequest);
-        $em->flush();
-      }
-//   THIS WORKS -> IN THE FURUTE PUT THIS INTO RABIT-MQ
+//   THIS WORKS -> IN THE FURUTE PUT THIS INTO RABIT-MQ or ZMQ
       $requestForSlack = $client->post($slackRequest->getResponseUrl(), [], ['payload' => json_encode($myArray)]);
       $response = $requestForSlack->send();
-      $logger->info($response->getBody());
+      $logger->info($slack->getId());
     }
+
     return $this->view(['text' => ":panda_face: Panda is thinking in " . $randomWord->getBody(), "response_type" => "ephemeral"], Response::HTTP_OK);
   }
 
