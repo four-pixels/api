@@ -2,3 +2,17 @@ services:
 #    four_pixels.example:
 #        class: FourPixelsBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+  fourpixels_user_provider:
+    class: FourPixelsBundle\Security\Core\User\FOSUBUserProvider
+    arguments: [@fos_user.user_manager,{facebook: facebook_id, google: google_id}, @security.password_encoder,@event_dispatcher, @logger]
+    
+  fourpixels.event.authentication_success_listener:
+        class: FourPixelsBundle\Listener\AuthenticationHandler
+        public: false
+        arguments:
+          - @router
+          - @session
+          - @security.context
+          - @logger
+          - @lexik_jwt_authentication.jwt_manager
+          - @event_dispatcher

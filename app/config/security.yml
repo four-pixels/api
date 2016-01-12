@@ -1,26 +1,66 @@
 security:
-    encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
+  encoders:
+    FOS\UserBundle\Model\UserInterface: bcrypt
 
-    role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_API:         ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+  role_hierarchy:
+    ROLE_ADMIN:       ROLE_USER
+    ROLE_API:         ROLE_USER
+    ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
 
-    providers:
-        in_memory:
-            memory:
-                users:
-                    restapi:  { password: secretpw, roles: [ 'ROLE_API' ] }
+  providers:
+    fos_userbundle:
+      id: fos_user.user_provider.username
+    in_memory:
+      memory:
+        users:
+          restapi:  { password: secretpw, roles: [ 'ROLE_API' ] }
 
-    firewalls:
-        dev:
-            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-
-        main:
-            pattern: ^/
-            anonymous: ~
-            stateless:  true
-            http_basic:
-                realm: "Demo REST API (username: restapi, password: secretpw)"
+  firewalls:
+    dev:
+      pattern:  ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    main:
+      pattern: ^/
+      anonymous: ~
+      stateless:  true
+      http_basic:
+        realm: "Demo REST API (username: restapi, password: secretpw)"
+#      form_login:
+#        provider: fos_userbundle
+#        success_handler:          lexik_jwt_authentication.handler.authentication_success
+#        failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+#        require_previous_session: false
+#        csrf_token_generator: security.csrf.token_manager >=2.8
+#        csrf_provider: form.csrf_provider                 <2.8 
+      logout:       true
+      lexik_jwt:
+            authorization_header: # check token in Authorization Header
+                enabled: true
+                prefix:  Bearer
+            cookie:               # check token in a cookie
+                enabled: false
+                name:    BEARER
+            query_parameter:      # check token in query string parameter
+                enabled: true
+                name:    bearer
+            throw_exceptions:        false     # When an authentication failure occurs, return a 401 response immediately
+            create_entry_point:      true      # When no authentication details are provided, create a default entry point that returns a 401 response
+            authentication_provider: lexik_jwt_authentication.security.authentication.provider
+            authentication_listener: lexik_jwt_authentication.security.authentication.listener
+      oauth:
+        resource_owners:
+          facebook:           "/login/check-facebook"
+          google:             "/login/check-google"
+        login_path:        /connect
+        use_forward:       false
+        failure_path:      /connect
+        oauth_user_provider:
+          service: fourpixels_user_provider
+        success_handler: fourpixels.event.authentication_success_listener
+        failure_handler: fourpixels.event.authentication_success_listener
+        
+   
+  access_control:
+    - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+    - { path: ^/, role: ROLE_USER }

@@ -73,7 +73,7 @@ class SlackRequest {
 // ...
   /**
    * @ORM\ManyToOne(targetEntity="Slack", inversedBy="slack_requests")
-   * @ORM\JoinColumn(name="slack_id", referencedColumnName="id")
+   * @ORM\JoinColumn(name="slack_id", referencedColumnName="id", nullable=false)
    */
   private $slack;
 
@@ -373,28 +373,26 @@ class SlackRequest {
     return $this->updatedAt;
   }
 
+  /**
+   * Set slack
+   *
+   * @param \FourPixelsBundle\Entity\Slack $slack
+   *
+   * @return SlackRequest
+   */
+  public function setSlack(\FourPixelsBundle\Entity\Slack $slack = null) {
+    $this->slack = $slack;
 
-    /**
-     * Set slack
-     *
-     * @param \FourPixelsBundle\Entity\Slack $slack
-     *
-     * @return SlackRequest
-     */
-    public function setSlack(\FourPixelsBundle\Entity\Slack $slack = null)
-    {
-        $this->slack = $slack;
+    return $this;
+  }
 
-        return $this;
-    }
+  /**
+   * Get slack
+   *
+   * @return \FourPixelsBundle\Entity\Slack
+   */
+  public function getSlack() {
+    return $this->slack;
+  }
 
-    /**
-     * Get slack
-     *
-     * @return \FourPixelsBundle\Entity\Slack
-     */
-    public function getSlack()
-    {
-        return $this->slack;
-    }
 }

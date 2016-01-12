@@ -6,79 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
- * {  
- *  "name":"Jason Cameron",
- *  "profile_name":"jasoncameron",
- *  "profile_url":"https://teamtreehouse.com/jasoncameron",
- *  "gravatar_url":"https://secure.gravatar.com/avatar/13366514d87acd424601bac475b3010b?s=400\u0026d=https%3A%2F%2Fstatic.teamtreehouse.com%2Fassets%2Fcontent%2Fdefault_avatar-1194852ae95df3501aed27c0a96da653.png\u0026r=pg",
- *  "gravatar_hash":"13366514d87acd424601bac475b3010b",
- *  "badges":[  
- *     {  
- *        "id":912,
- *        "name":"Beginning HTML and CSS",
- *        "url":"https://teamtreehouse.com/library/how-to-make-a-website/beginning-html-and-css",
- *        "icon_url":"https://achievement-images.teamtreehouse.com/badges_html_howtomakeawebsite_stage01.png",
- *        "earned_date":"2014-09-03T19:28:53.000Z",
- *        "courses":[  
- *           {  
- *              "title":"How to Make a Website",
- *              "url":"https://teamtreehouse.com/library/how-to-make-a-website",
- *              "badge_count":1
- *          },
- *           {  
- *              "title":"Beginning HTML and CSS",
- *              "url":"https://teamtreehouse.com/library/how-to-make-a-website/beginning-html-and-css",
- *              "badge_count":1
- *           }
- *        ]
- *     },
- *     {  
- *        "id":2152,
- *        "name":"JavaScript Functions",
- *        "url":"https://teamtreehouse.com/library/javascript-basics/creating-reusable-code-with-functions",
- *        "icon_url":"https://achievement-images.teamtreehouse.com/badges_JavaScript_Basics_Stage4B.png",
- *       "earned_date":"2015-02-19T23:24:53.000Z",
- *        "courses":[  
- *           {  
- *              "title":"JavaScript Basics",
- *              "url":"https://teamtreehouse.com/library/javascript-basics",
- *              "badge_count":1
- *           },
- *           {  
- *              "title":"Creating Reusable Code with Functions",
- *              "url":"https://teamtreehouse.com/library/javascript-basics/creating-reusable-code-with-functions",
- *              "badge_count":1
- *           }
- *        ]
- *     },
- *  ],
- *  "points":{  
- *     "total":1794,
- *     "HTML":144,
- *     "CSS":63,
- *     "Design":0,
- *     "JavaScript":1420,
- *     "Ruby":1,
- *     "PHP":52,
- *     "WordPress":0,
- *     "iOS":72,
- *     "Android":0,
- *     "Development Tools":9,
- *     "Business":0,
- *     "Python":0,
- *     "Java":0,
- *     "Digital Literacy":0,
- *     "Game Development":0,
- *     "C#":0,
- *     "Databases":0
- *  }
- * }
- */
-
-/**
  * SlackTeamTreeHouse
  *
- * @ORM\Table(name="slack_team_tree_house")
+ * @ORM\Table(name="slack_team_tree_house", uniqueConstraints={@ORM\UniqueConstraint(name="user_slack_unique", columns={"slack_id", "profile_name"})})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  */
@@ -102,7 +32,7 @@ class SlackTeamTreeHouse {
   protected $name;
 
   /**
-   * @ORM\Column(name="profile_name" , type="string", length=64 , nullable=false, unique=true)
+   * @ORM\Column(name="profile_name" , type="string", length=64 , nullable=false)
    */
   protected $profile_name;
 
@@ -138,7 +68,7 @@ class SlackTeamTreeHouse {
 
   /**
    * @ORM\ManyToOne(targetEntity="Slack", inversedBy="slack_team_tree_house_list")
-   * @ORM\JoinColumn(name="slack_id", referencedColumnName="id")
+   * @ORM\JoinColumn(name="slack_id", referencedColumnName="id" , nullable=false)
    */
   private $slack;
 
@@ -292,6 +222,13 @@ class SlackTeamTreeHouse {
    * @return SlackTeamTreeHouse
    */
   public function setBadges($badges) {
+    $eval = $badges;
+    if (is_array($eval)) {
+      $badges = json_encode($eval);
+    } else {
+      $eval = json_decode($badges, true);
+    }
+
     $this->badges = $badges;
 
     return $this;
@@ -316,12 +253,15 @@ class SlackTeamTreeHouse {
   public function setPoints($points) {
     $eval = $points;
     if (is_array($eval)) {
-      $points = json_encode($points);
+      $points = json_encode($eval);
     } else {
       $eval = json_decode($points, true);
     }
 
     $this->points = $points;
+    if (is_array($eval)) {
+      $this->total = $eval['total'];
+    }
 
     return $this;
   }
@@ -331,7 +271,29 @@ class SlackTeamTreeHouse {
    *
    * @return string
    */
-  public function getPoints() {
+  public function getPoints($renderForSlack = false) {
+    if ($renderForSlack) {
+      $points = [];
+      $total = null;
+      foreach (json_decode($this->points) as $key => $value) {
+        if ($key != "total") {
+          $points[] = [
+              "title" => $key,
+              "value" => $value,
+              "short" => true,
+          ];
+        } else {
+          $total = [
+              "title" => $key,
+              "value" => $value,
+              "short" => false,
+          ];
+        }
+      }
+      $points[] = $total;
+      return $points;
+    }
+
     return $this->points;
   }
 
@@ -421,6 +383,42 @@ class SlackTeamTreeHouse {
    */
   public function getTotal() {
     return $this->total;
+  }
+
+  /**
+   * Set content
+   *
+   * @param string $content
+   *
+   * @return SlackTeamTreeHouse
+   */
+  public function setContent($content) {
+    $eval = $content;
+    if (is_array($eval)) {
+      $content = json_encode($content);
+    } else {
+      $eval = json_decode($content);
+    }
+    $this->content = $content;
+    if (is_array($eval)) {
+      $this->setName($eval["name"]);
+      $this->setProfileName($eval["profile_name"]);
+      $this->setProfileUrl($eval["profile_url"]);
+      $this->setGravatarUrl($eval["gravatar_url"]);
+      $this->setGravatarHash($eval["gravatar_hash"]);
+      $this->setBadges($eval['badges']);
+      $this->setPoints($eval['points']);
+    }
+    return $this;
+  }
+
+  /**
+   * Get content
+   *
+   * @return string
+   */
+  public function getContent() {
+    return $this->content;
   }
 
 }

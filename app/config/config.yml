@@ -1,7 +1,6 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-
 framework:
     #esi:             ~
     translator:      { fallback: %locale% }
@@ -17,7 +16,7 @@ framework:
         #assets_version: SomeVersionScheme
     default_locale:  "%locale%"
     trusted_proxies: ~
-    session:         false
+    session:         true
     fragments:       ~
 
 # Twig Configuration
@@ -79,6 +78,7 @@ fos_rest:
             html: true
     format_listener:
         rules:
+            - { path: ^/$, priorities: [  html ], fallback_format: ~, prefer_extension: true }
             - { path: ^/, priorities: [  json ], fallback_format: ~, prefer_extension: true }
         media_type:
             version_regex: '/(v|version)=(?P<version>[0-9\.]+)/'
@@ -109,12 +109,38 @@ fos_http_cache:
 stof_doctrine_extensions:
     uploadable:
         # Default file path: This is one of the three ways you can configure the path for the Uploadable extension
+        default_file_path: %kernel.root_dir%/../web/uploads
+        # Mime type guesser class: Optional. By default, we provide an adapter for the one present in the HttpFoundation component of Symfony
+        mime_type_guesser_class: Stof\DoctrineExtensionsBundle\Uploadable\MimeTypeGuesserAdapter
+        # Default file info class implementing FileInfoInterface: Optional. By default we provide a class which is prepared to receive an UploadedFile instance.
+        default_file_info_class: Stof\DoctrineExtensionsBundle\Uploadable\UploadedFileInfo 
+ 
     orm:
         default:
             timestampable: true
             sluggable: true
             uploadable: true   
-            
+
+nelmio_cors:
+    defaults:
+        allow_credentials: false
+        allow_origin: []
+        allow_headers: []
+        allow_methods: []
+        expose_headers: []
+        max_age: 0
+        hosts: []
+        origin_regex: false
+    paths:
+        '^/':
+            origin_regex: true
+            allow_origin: ['^http://localhost:[0-9]+']
+            allow_headers: ['*']
+            allow_methods: ['POST', 'PUT', 'GET', 'DELETE','OPTIONS']
+            max_age: 3600
+            hosts: ['\.'] 
+
+
 gos_web_socket:
     server:
         port: 1233        #The port the socket server will listen on
@@ -129,3 +155,40 @@ gos_web_socket:
             port: 5557
             persistent: true
             protocol: tcp
+            
+hwi_oauth:
+    firewall_name: main
+    fosub:
+        username_iterations: 5
+        properties:
+            google: google_id
+            facebook: facebook_id
+    resource_owners:
+      google:
+            type:                google
+            client_id:           %google_client_id%
+            client_secret:       %google_client_secret%
+            scope:               "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile"
+#            user_response_class: Override\HWIOAuthOverrideBundle\OAuth\Response\GoogleUserResponse
+            options:
+                access_type:     offline
+      facebook:
+            type:                facebook
+            client_id:           "%facebook_app_id%"
+            client_secret:       "%facebook_app_secret%"
+            scope:               "email public_profile"
+            infos_url:           "https://graph.facebook.com/me?fields=id,name,email,picture.type(square)"
+
+jms_security_extra:
+    expressions: true
+            
+fos_user:
+    db_driver: orm 
+    firewall_name: main
+    user_class: FourPixelsBundle\Entity\User
+    
+lexik_jwt_authentication:
+    private_key_path: %jwt_private_key_path%
+    public_key_path:  %jwt_public_key_path%
+    pass_phrase:      %jwt_key_pass_phrase%
+    token_ttl:        %jwt_token_ttl%

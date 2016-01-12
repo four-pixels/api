@@ -90,11 +90,13 @@ class Slack {
 
   /**
    * @ORM\OneToMany(targetEntity="SlackRequest", mappedBy="slack")
+   * @ORM\OrderBy({"created_at" = "ASC"})
    */
   private $slack_requests;
 
   /**
    * @ORM\OneToMany(targetEntity="SlackTeamTreeHouse", mappedBy="slack")
+   * @ORM\OrderBy({"name" = "ASC"})
    */
   private $slack_team_tree_house_list;
 
@@ -120,6 +122,10 @@ class Slack {
   public function __construct() {
     $this->slack_requests = new ArrayCollection();
     $this->slack_team_tree_house_list = new ArrayCollection();
+  }
+
+  public function __toString() {
+    return $this->getTeamName();
   }
 
   /**
@@ -439,38 +445,35 @@ class Slack {
     return $this->slack_requests;
   }
 
+  /**
+   * Add slackTeamTreeHouseList
+   *
+   * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+   *
+   * @return Slack
+   */
+  public function addSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList) {
+    $this->slack_team_tree_house_list[] = $slackTeamTreeHouseList;
 
-    /**
-     * Add slackTeamTreeHouseList
-     *
-     * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
-     *
-     * @return Slack
-     */
-    public function addSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList)
-    {
-        $this->slack_team_tree_house_list[] = $slackTeamTreeHouseList;
+    return $this;
+  }
 
-        return $this;
-    }
+  /**
+   * Remove slackTeamTreeHouseList
+   *
+   * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
+   */
+  public function removeSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList) {
+    $this->slack_team_tree_house_list->removeElement($slackTeamTreeHouseList);
+  }
 
-    /**
-     * Remove slackTeamTreeHouseList
-     *
-     * @param \FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList
-     */
-    public function removeSlackTeamTreeHouseList(\FourPixelsBundle\Entity\SlackTeamTreeHouse $slackTeamTreeHouseList)
-    {
-        $this->slack_team_tree_house_list->removeElement($slackTeamTreeHouseList);
-    }
+  /**
+   * Get slackTeamTreeHouseList
+   *
+   * @return \Doctrine\Common\Collections\Collection
+   */
+  public function getSlackTeamTreeHouseList() {
+    return $this->slack_team_tree_house_list;
+  }
 
-    /**
-     * Get slackTeamTreeHouseList
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getSlackTeamTreeHouseList()
-    {
-        return $this->slack_team_tree_house_list;
-    }
 }
